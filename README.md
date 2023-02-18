@@ -1,2 +1,2 @@
-# UNCHARTED_Climbing
+# UNCHARTED
 UNCHARTED's Wall Climbing Movements
