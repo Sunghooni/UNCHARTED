@@ -9,13 +9,18 @@ public class PlayerMovements : MonoBehaviour
     private Animator animator;
 
     private float moveSpeed = 5f;
+    private float sprintSpeed = 7.5f;
+
     private float jumpPower = 5f;
     private float mouseSens = 3f;
 
     private Vector3 moveInput;
     private Vector2 mouseInput;
     private bool jumpInput;
+    private bool sprintInput;
+
     private bool isGround;
+    private Vector3 lastVelocity;
 
     private void OnApplicationFocus(bool focus)
     {
@@ -35,7 +40,8 @@ public class PlayerMovements : MonoBehaviour
         moveInput = new(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
         mouseInput = new(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
         jumpInput = Input.GetKeyDown(KeyCode.Space);
-        
+        sprintInput = Input.GetKey(KeyCode.LeftShift);
+
         CheckIsGround();
         CheckJump();
     }
@@ -49,10 +55,10 @@ public class PlayerMovements : MonoBehaviour
     private void MoveXZ()
     {
         //Movements By Rigidbody
-        Vector3 moveDir = transform.TransformDirection(moveInput) * moveSpeed;
+        Vector3 moveDir = transform.TransformDirection(moveInput) * (sprintInput ? sprintSpeed : moveSpeed);
 
-        moveDir = Vector3.Lerp(rb.velocity, moveDir, Time.deltaTime * 5f);
-        rb.velocity = new Vector3(moveDir.x, rb.velocity.y, moveDir.z);
+        lastVelocity = Vector3.Lerp(lastVelocity, moveDir, Time.fixedDeltaTime * 5f);
+        rb.velocity = new Vector3(lastVelocity.x, rb.velocity.y, lastVelocity.z);
 
         //Movements Blend Tree
         Vector3 localVel = transform.InverseTransformDirection(rb.velocity);
